@@ -61,6 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiResponse<?>> jwtError(JwtException  jwtException){
+        System.out.println(jwtException.getMessage());
         ApiError apiError=ApiError.builder().status(HttpStatus.UNAUTHORIZED).message("Auth Failed").build();
         return buildErrorApiResponse(apiError);
     }

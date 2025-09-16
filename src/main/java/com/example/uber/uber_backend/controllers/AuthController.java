@@ -4,6 +4,7 @@ package com.example.uber.uber_backend.controllers;
 import com.example.uber.uber_backend.dtos.*;
 import com.example.uber.uber_backend.services.AuthService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,17 @@ public class AuthController {
         Cookie cookie=new Cookie("refreshToken",loginResponseDto.getRefreshToken());
         cookie.setHttpOnly(true);
         httpServletResponse.addCookie(cookie);
+        System.out.println(loginResponseDto.getRefreshToken());
         return  ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/refresh-token")
+    ResponseEntity<?> refreshToken(HttpServletRequest request,HttpServletResponse response){
+       Cookie[] cookies=request.getCookies();
+       String token= authService.refreshToken(cookies);
+        Map<String,String> result=new HashMap<>();
+        result.put("token",token);
+        return ResponseEntity.ok(result);
+
     }
 }

@@ -3,6 +3,7 @@ package com.example.uber.uber_backend.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,7 +29,8 @@ public class ApiLogger {
     private String ipAddress;
 
     @Column(name = "user_id")
-    private String userId;
+    @CreatedBy
+    private Long userId;
 
     @CreatedDate
     @Column(name = "created_at")

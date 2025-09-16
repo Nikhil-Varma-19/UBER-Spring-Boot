@@ -42,6 +42,7 @@ public class JWTFilter {
                 .setSubject(user.getId().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshTime * 1000L))
+                .signWith(generateSecretKey())
                 .compact();
     }
 
@@ -49,8 +50,8 @@ public class JWTFilter {
         return Jwts.parser().verifyWith(generateSecretKey()).build().parseSignedClaims(token).getPayload();
     }
 
-    public Long getIdFromRefreshToken(String token){
-        Claims claims = extractClaimsFromToken(token);
+    public Long getIdFromRefreshToken(String refreshToken){
+        Claims claims = extractClaimsFromToken(refreshToken);
         return  Long.valueOf(claims.getSubject());
     }
 
