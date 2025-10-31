@@ -23,15 +23,6 @@ public class ApiLoggerInterceptor implements HandlerInterceptor {
         apiLoggerDto.setMethod(request.getMethod());
         apiLoggerDto.setUrl(request.getRequestURI());
         apiLoggerDto.setIpAddress(request.getRemoteAddr());
-        if(request instanceof ContentCachingRequestWrapper wrapper){
-            // ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
-            byte[] content= wrapper.getContentAsByteArray();
-            String body=new String(content, StandardCharsets.UTF_8);
-            System.out.println("bodyyyy"+body);
-            apiLoggerDto.setBody(body);
-        }else {
-            apiLoggerDto.setBody(null);
-        }
         loggerService.createApiLog(apiLoggerDto);
         return true;
     }

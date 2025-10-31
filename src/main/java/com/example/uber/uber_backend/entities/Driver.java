@@ -28,6 +28,15 @@ public class Driver {
 
     private String vehicleId;
 
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "update_file_name")
+    private String updateFileName;
+
+    @Column(name = "file_path")
+    private String filePath;
+
     @Column(columnDefinition = "Geometry(Point,4326)")
     private Point currentLocation;
 }

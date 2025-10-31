@@ -1,15 +1,19 @@
 package com.example.uber.uber_backend.controllers;
 
 
+import com.example.uber.uber_backend.advices.ApiResponse;
 import com.example.uber.uber_backend.dtos.*;
 import com.example.uber.uber_backend.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +30,22 @@ public class AuthController {
         return  ResponseEntity.ok(authService.signup(signUpDto));
     }
 
+//
+//    @PostMapping("/onBoardDriver/{userId}")
+//    ResponseEntity<DriverDto> onBoardDriver(@PathVariable Long userId, @RequestParam(value = "vehicle",required = true) String vehicle, MultipartFile file){
+//        return  ResponseEntity.ok(authService.newDriver(userId,vehicle, file));
+//    }
+
     @Secured("ROLE_ADMIN")
-    @PostMapping("/onBoardDriver/{userId}")
-    ResponseEntity<DriverDto> onBoardDriver(@PathVariable Long userId, @RequestBody DriverVehicleDto driverVehicleDto){
-        return  ResponseEntity.ok(authService.newDriver(userId, driverVehicleDto.getVehicle()));
+    @PostMapping(value = "/onBoardDriver/{userId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<DriverDto> onBoardDriver(
+            @PathVariable Long userId,
+            @ModelAttribute DriverVehicleDto driverVehicleDto,
+            @RequestParam(value = "file") MultipartFile file){
+        System.out.println(userId);
+        System.out.println(driverVehicleDto.getVehicle());
+        System.out.println(file != null ? file.getOriginalFilename() : null);
+        return  ResponseEntity.ok(authService.newDriver(userId, driverVehicleDto.getVehicle(), file));
     }
 
     @PostMapping("/login")
@@ -52,6 +68,11 @@ public class AuthController {
         Map<String,String> result=new HashMap<>();
         result.put("token",token);
         return ResponseEntity.ok(result);
+    }
 
+    @PostMapping("/forgot-password")
+    ResponseEntity<ApiResponse<Object>> forgotPassword(@Valid  @RequestBody ForgotPasswordEmail forgotPasswordEmail){
+        authService.forgotPassword(forgotPasswordEmail.getEmail());
+        return ResponseEntity.ok(new ApiResponse<>("OTP sent to registered email address."));
     }
 }

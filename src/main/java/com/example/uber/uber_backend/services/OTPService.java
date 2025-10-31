@@ -26,14 +26,14 @@ public class OTPService {
         if(saveOtp.getId() == null) throw  new RuntimeConflictException("OTP not saved");
     }
 
-    private static final Set<String> TYPE =
-            Arrays.stream(OTPConstant.OTPType.values())
-                    .map(Enum::name)
-                    .collect(Collectors.toSet());
+//    private static final Set<String> TYPE =
+//            Arrays.stream(OTPConstant.OTPType.values())
+//                    .map(Enum::name)
+//                    .collect(Collectors.toSet());
 
-    private static boolean exists(String value) {
-        return TYPE.contains(value);
-    }
+//    private static boolean exists(String value) {
+//        return TYPE.contains(value);
+//    }
 
     public void verifyOTP(String otpValue, OTPConstant.OTPType type,String action,Long id){
         System.out.println("===================="+otpValue+" "+type+" "+action+" "+id+"===================");
@@ -52,6 +52,31 @@ public class OTPService {
         if(savedOTP.getId() == null) throw  new RuntimeConflictException("OTP not update.");
 
     }
+
+    public void createForgotPassword(String otpValue,Long userId){
+        OTPDB otpdb= OTPDB.builder().createdBy(userId).otp(otpValue).action("OTPPASS").type(OTPConstant.OTPType.SEND).build();
+        OTPDB savedOTP=otpRepository.save(otpdb);
+        if(savedOTP.getId() == null) throw  new RuntimeConflictException("Problem with OTP Services");
+    }
+
+    public void verifyForgotPassword(String otpValue,Long userId){
+        Optional<OTPDB> findOTP=otpRepository.findByOtpAndTypeAndActionAndIsActiveTrueAndCreatedBy(otpValue, OTPConstant.OTPType.SEND,"OTPPASS",userId);
+        if(findOTP.isEmpty()) throw  new RuntimeConflictException("OTP is not found");
+        LocalDateTime now=LocalDateTime.now();
+        if(findOTP.get().getCreatedBy() != null &&  now.isAfter(findOTP.get().getCreatedAt().plusMinutes(2))){
+            throw  new RuntimeConflictException("OTP is Expired.");
+        }
+        findOTP.get().setIsActive(false);
+        findOTP.get().setType(OTPConstant.OTPType.RECEIVED);
+        OTPDB savedOTP=otpRepository.save(findOTP.get());
+        if(savedOTP.getId() == null) throw  new RuntimeConflictException("Problem with OTP Services");
+    }
+
+
+
+
+
+
 
 
 

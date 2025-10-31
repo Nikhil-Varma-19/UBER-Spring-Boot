@@ -1,6 +1,8 @@
 package com.example.uber.uber_backend.advices;
 
 import com.example.uber.uber_backend.dtos.ErrorLoggerDto;
+import com.example.uber.uber_backend.exceptions.EmailException;
+import com.example.uber.uber_backend.exceptions.FileException;
 import com.example.uber.uber_backend.exceptions.ResourceNotFound;
 import com.example.uber.uber_backend.exceptions.RuntimeConflictException;
 import com.example.uber.uber_backend.services.LoggerService;
@@ -32,6 +34,13 @@ public class GlobalExceptionHandler {
         ApiError apiError=ApiError.builder().status(HttpStatus.NOT_FOUND).message(exc.getMessage()).build();
         return buildErrorApiResponse(apiError);
     }
+
+    @ExceptionHandler(FileException.class)
+    public ResponseEntity<ApiResponse<?>> handleFileException(FileException exc){
+        ApiError apiError=ApiError.builder().status(HttpStatus.BAD_REQUEST).message(exc.getMessage()).build();
+        return buildErrorApiResponse(apiError);
+    }
+
     @ExceptionHandler(RuntimeConflictException.class)
     public ResponseEntity<ApiResponse<?>> handleRuntimeConflict(RuntimeConflictException exc){
         ApiError apiError=ApiError.builder().status(HttpStatus.CONFLICT).message(exc.getMessage()).build();
@@ -63,6 +72,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> jwtError(JwtException  jwtException){
         System.out.println(jwtException.getMessage());
         ApiError apiError=ApiError.builder().status(HttpStatus.UNAUTHORIZED).message("Auth Failed").build();
+        return buildErrorApiResponse(apiError);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ApiResponse<?>> emailError(  EmailException emailException){
+        ApiError apiError=ApiError.builder().status(HttpStatus.SERVICE_UNAVAILABLE).message("Check Email Services").build();
         return buildErrorApiResponse(apiError);
     }
 

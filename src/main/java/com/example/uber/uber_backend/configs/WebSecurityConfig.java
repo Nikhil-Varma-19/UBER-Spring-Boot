@@ -2,6 +2,7 @@ package com.example.uber.uber_backend.configs;
 
 import com.example.uber.uber_backend.filters.JWTAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,14 +19,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    @Value("${dir.getFiles}")
+    private  String getUploadsPath;
+
     private final JWTAuthFilter jwtAuthFilter;
 
-    private static final String[] publicRoute={"/auth/**"};
+
+
+
 
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
+       final String[] publicRoute={"/auth/**",getUploadsPath+"/**"};
         httpSecurity
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)

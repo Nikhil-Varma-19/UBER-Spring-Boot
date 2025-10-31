@@ -52,4 +52,5 @@ public class DriverController {
         PageRequest pageRequest=PageRequest.of(pageOffSet,pageSize, Sort.by(Sort.Direction.DESC,"id"));
         return  ResponseEntity.ok(driverService.getAllMyRide(pageRequest));
     }
+    
 }
